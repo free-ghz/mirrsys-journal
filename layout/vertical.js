@@ -18,10 +18,10 @@ function create(options) {
         height = 0
 
         children.forEach(child => {
-            if (child.getHeight() > height) {
-                height = child.getHeight()
+            if (child.getWidth() > width) {
+                width = child.getWidth()
             }
-            width += child.getWidth()
+            height += child.getHeight()
         })
 
         if (!!parent.border) {
@@ -48,13 +48,20 @@ function create(options) {
         }
 
         let text = ""
-        children.forEach(child => {
-            if (child.getHeight() > index) {
-                text += child.getRow(index)
+        let offset = 0
+        for (let child of children) {
+            if (index - offset < child.getHeight()) {
+                text += child.getRow(index - offset)
+                break;
             } else {
-                text += " ".repeat(child.getWidth())
+                offset += child.getHeight()
             }
-        })
+        }
+        let lengthDifference = width - text.length
+        if (!!parent.border) {
+            lengthDifference -= 2
+        }
+        text = text + " " .repeat(lengthDifference)
 
         if (!!parent.border) {
             text = parent.borderStuff.addBorder(text)

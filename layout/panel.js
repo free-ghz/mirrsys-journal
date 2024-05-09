@@ -5,8 +5,12 @@ function create() {
         getWidth: () => 0,
         getRow: () => "",
         borderStuff: {
-            getTop: (length) => {
-                return "┌" + "─".repeat(length) + "┐"
+            getTop: (length, title) => {
+                if (!!title && title !== true) {
+                    return "┌┤" + title + "├" + "─".repeat(length - title.length - 2)  + "┐"
+                } else {
+                    return "┌" + "─".repeat(length) + "┐"
+                }
             },
             getBottom: (length) => {
                 return "└" + "─".repeat(length) + "┘"
@@ -44,7 +48,7 @@ function createText(text, options) {
         let index = i
         if (!!panel.border) {
             if (i == 0) {
-                return panel.borderStuff.getTop(longestTextRow)
+                return panel.borderStuff.getTop(longestTextRow, panel.border)
             } else if (i == getHeight() - 1) {
                 return panel.borderStuff.getBottom(longestTextRow)
             } else {
