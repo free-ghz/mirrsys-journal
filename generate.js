@@ -1,4 +1,5 @@
 import panel from './layout/panel.js'
+import horizontal from './layout/horizontal.js'
 import fs from 'fs'
 
 async function read() {
@@ -9,16 +10,19 @@ async function read() {
 
 async function convert() {
     let files = await read()
+    let h = horizontal.create({ border: true })
     files
         .map(file => panel.createText(file, { border: true }))
         .forEach(text => {
-            console.log("\n\n* text:")
-            let rows = text.getHeight()
-            for (let i = 0; i < rows; i++) {
-                let row = text.getRow(i)
-                console.log(row)
-            }
+            h.addChild(text)
         })
+
+    
+    let rows = h.getHeight()
+    for (let i = 0; i < rows; i++) {
+        let row = h.getRow(i)
+        console.log(row)
+    }
 }
 
 convert()

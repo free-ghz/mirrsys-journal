@@ -2,7 +2,19 @@ function create() {
     let panel = {
         border: false,
         getHeight: () => 0,
-        getRow: () => ""
+        getWidth: () => 0,
+        getRow: () => "",
+        borderStuff: {
+            getTop: (length) => {
+                return "┌" + "─".repeat(length) + "┐"
+            },
+            getBottom: (length) => {
+                return "└" + "─".repeat(length) + "┘"
+            },
+            addBorder: (text) => {
+                return "│" + text + "│"
+            }
+        }
     }
     return panel
 }
@@ -18,6 +30,11 @@ function createText(text, options) {
             longestTextRow = rows[i].length
         }
     }
+    let getWidth = () => {
+        let textWidth = longestTextRow;
+        let borderWidth = !!panel.border ? 2 : 0
+        return textWidth + borderWidth;
+    }
     let getHeight = () => {
         let textHeight = rows.length;
         let borderHeight = !!panel.border ? 2 : 0
@@ -27,9 +44,9 @@ function createText(text, options) {
         let index = i
         if (!!panel.border) {
             if (i == 0) {
-                return "┌" + "─".repeat(longestTextRow) + "┐"
+                return panel.borderStuff.getTop(longestTextRow)
             } else if (i == getHeight() - 1) {
-                return "└" + "─".repeat(longestTextRow) + "┘"
+                return panel.borderStuff.getBottom(longestTextRow)
             } else {
                 index = i-1
             }
@@ -38,12 +55,12 @@ function createText(text, options) {
         let lengthDifference = longestTextRow - text.length
         let paddedText = text + " ".repeat(lengthDifference)
         if (!!panel.border) {
-            paddedText = "│" + paddedText + "│"
+            paddedText = panel.borderStuff.addBorder(paddedText)
         }
         return paddedText
     }
 
-    return {...panel, getRow, getHeight}
+    return { ...panel, getRow, getHeight, getWidth }
 }
 
-export default { createText }
+export default { createText, create }
