@@ -47,21 +47,21 @@ function create(options) {
             }
         }
 
-        let text = ""
+        let text
         let offset = 0
         for (let child of children) {
             if (index - offset < child.getHeight()) {
-                text += child.getRow(index - offset)
+                text = child.getRow(index - offset)
                 break;
             } else {
                 offset += child.getHeight()
             }
         }
-        let lengthDifference = width - text.length
+        let lengthDifference = width - text.text.length
         if (!!parent.border) {
             lengthDifference -= 2
         }
-        text = text + " " .repeat(lengthDifference)
+        text.text = text.text + " " .repeat(lengthDifference)
 
         if (!!parent.border) {
             text = parent.borderStuff.addBorder(text)

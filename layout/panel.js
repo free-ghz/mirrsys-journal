@@ -1,3 +1,5 @@
+import { copyWithOffset } from '../formatting.js'
+
 function create() {
     let panel = {
         border: false,
@@ -7,16 +9,37 @@ function create() {
         borderStuff: {
             getTop: (length, title) => {
                 if (!!title && title !== true) {
-                    return "┌┤" + title + "├" + "─".repeat(length - title.length - 2)  + "┐"
+                    let text = "┌┤" + title + "├" + "─".repeat(length - title.length - 2)  + "┐"
+                    let formatting = [
+                        { start: 0, end: 2, type: "decoration" },
+                        { start: 2 + title.length, end: text.length, type: "decoration" },
+                    ]
+                    return { text, formatting }
                 } else {
-                    return "┌" + "─".repeat(length) + "┐"
+                    let text = "┌" + "─".repeat(length) + "┐"
+                    return {
+                        text,
+                        formatting: [{ start: 0, end: text.length, type: "decoration" }]
+                    }
                 }
             },
             getBottom: (length) => {
-                return "└" + "─".repeat(length) + "┘"
+                let text = "└" + "─".repeat(length) + "┘"
+                return {
+                    text,
+                    formatting: [{ start: 0, end: text.length, type: "decoration" }]
+                }
             },
-            addBorder: (text) => {
-                return "│" + text + "│"
+            addBorder: (row) => {
+                let newText = "│" + row.text + "│"
+                let newFormatting = copyWithOffset(row.formatting, 1)
+                newFormatting.push(
+                    { start: 0, end: 1, type: "decoration" }
+                )
+                newFormatting.push(
+                    { start: newText.length-1, end: newText.length, type: "decoration" }
+                )
+                return { text: newText, formatting: newFormatting }
             }
         }
     }
@@ -58,10 +81,15 @@ function createText(text, options) {
         let text = rows[index]
         let lengthDifference = longestTextRow - text.length
         let paddedText = text + " ".repeat(lengthDifference)
-        if (!!panel.border) {
-            paddedText = panel.borderStuff.addBorder(paddedText)
+
+        text = {
+            text: paddedText,
+            formatting: []
         }
-        return paddedText
+        if (!!panel.border) {
+            text = panel.borderStuff.addBorder(text)
+        }
+        return text
     }
 
     return { ...panel, getRow, getHeight, getWidth }

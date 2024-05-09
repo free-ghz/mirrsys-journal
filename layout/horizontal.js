@@ -1,4 +1,5 @@
 import panel from './panel.js'
+import { copyWithOffset } from '../formatting.js'
 
 function create(options) {
     let parent = { ...panel.create(), ...options }
@@ -47,20 +48,27 @@ function create(options) {
             }
         }
 
-        let text = ""
+        let composite = {
+            text: "",
+            formatting: []
+        }
+        let offset = 0
         children.forEach(child => {
             if (child.getHeight() > index) {
-                text += child.getRow(index)
+                let childRow = child.getRow(index)
+                composite.text += childRow.text
+                composite.formatting = [...composite.formatting, ...copyWithOffset(childRow.formatting, offset)]
             } else {
-                text += " ".repeat(child.getWidth())
+                composite.text += " ".repeat(child.getWidth())
             }
+            offset += child.getWidth()
         })
 
         if (!!parent.border) {
-            text = parent.borderStuff.addBorder(text)
+            composite = parent.borderStuff.addBorder(composite)
         }
 
-        return text
+        return composite
     }
 
     return { ...parent, getHeight, getWidth, getRow, addChild }
