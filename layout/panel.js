@@ -6,6 +6,7 @@ function create() {
         getHeight: () => 0,
         getWidth: () => 0,
         getRow: () => "",
+        decoration: false,
         borderStuff: {
             getTop: (length, title) => {
                 if (!!title && title !== true) {
@@ -85,6 +86,11 @@ function createText(text, options) {
         text = {
             text: paddedText,
             formatting: []
+        }
+        if (panel.decoration) {
+            text.formatting.push({
+                start: 0, end: paddedText.length, type: "decoration"
+            })
         }
         if (!!panel.border) {
             text = panel.borderStuff.addBorder(text)
