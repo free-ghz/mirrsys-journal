@@ -10,7 +10,7 @@ async function read() {
 async function convert() {
     let files = await read()
     files
-        .map(file => panel.createText(file))
+        .map(file => panel.createText(file, { border: true }))
         .forEach(text => {
             console.log("\n\n* text:")
             let rows = text.getHeight()
