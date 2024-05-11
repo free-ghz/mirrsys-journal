@@ -54,6 +54,12 @@ function generateHtmlFromPanel(panel) {
         let output = ""
         let row = panel.getRow(i)
         let events = convertToEvents(row.formatting)
+        // not the best way but eh.
+        events.push({
+            event: "terminator",
+            type: "terminator",
+            index: row.length
+        })
         let head = 0
         events.forEach((event, index) => {
             if (event.index != head) {
