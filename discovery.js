@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { parse } from './markupParser.js'
-import { generateHtmlFromPanel } from './generate.js'
+import { generateHtmlFromPanel, placeInFile } from './generate.js'
 
 async function read() {
     let files = await fs.promises.readdir('./input/')
@@ -18,7 +18,7 @@ async function main() {
     files.forEach(file => {
         let panels = parse(file.index)
         let html = generateHtmlFromPanel(panels)
-        console.log(html)
+        placeInFile(html, "tietiet")
     })
 
 }

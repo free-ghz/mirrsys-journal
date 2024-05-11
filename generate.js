@@ -1,51 +1,4 @@
-import panel from './layout/panel.js'
-import horizontal from './layout/horizontal.js'
-import vertical from './layout/vertical.js'
 import fs from 'fs'
-
-async function read() {
-    let files = await fs.promises.readdir('./input/')
-    return files
-        .map(filename => fs.readFileSync('./input/' + filename, 'utf8'))
-}
-
-async function main() {
-    let files = await read()
-    let main = vertical.create({ border: false })
-
-    let dashboard = horizontal.create({ border: false })
-    
-    let stats = vertical.create({ border: "Vertical being" })
-    stats.addChild(
-        panel.createText("Schmmm∞!")
-    )
-    stats.addChild(
-        panel.createText("Panel: another")
-    )
-    stats.addChild(
-        panel.createText("Panel: a third")
-    )
-    stats.addChild(
-        panel.createText("Panel: weeyyyy four")
-    )
-    dashboard.addChild(stats)
-
-    let catsay = horizontal.create({ border:true })
-    catsay.addChild(
-        panel.createText(files[1])
-    )
-    catsay.addChild(
-        panel.createText("Moew moew")
-    )
-    dashboard.addChild(catsay)
-
-    let pattern = panel.createText(files[3], { decoration: true })
-    main.addChild(pattern)
-    main.addChild(dashboard)
-
-    let html = generateHtmlFromPanel(main)
-    console.log(html)
-}
 
 function generateHtmlFromPanel(panel) {
     let rows = panel.getHeight()
@@ -117,4 +70,14 @@ function convertToEvents(formatting) {
     return events
 }
 
-main()
+function placeInFile(html, title) {
+    let template = fs.readFileSync("./template.html").toString()
+    template = template.replace("(title)", title)
+    template = template.replace("(here)", html)
+    if (!fs.existsSync("./output")) {
+        fs.mkdirSync("./output")
+    }
+    fs.writeFileSync("./output/index.html", template)
+}
+
+export { generateHtmlFromPanel, placeInFile }
