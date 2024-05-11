@@ -15,7 +15,7 @@ function readBlockStructure(text) {
     function readBlock() {
         let internalBlocks = []
         let stack = ""
-        let header = readBlockHeader()
+        let header = parseHeader(readBlockHeader())
         while (head < text.length) {
 
             let ch = text[head]
@@ -25,7 +25,8 @@ function readBlockStructure(text) {
                     // nested block start!
                     if (stack.length > 0) {
                         internalBlocks.push({
-                            text: stack
+                            text: stack,
+                            header: { options: { decoration: header.options.decoration }}
                         })
                         stack = ""
                     }
@@ -47,12 +48,13 @@ function readBlockStructure(text) {
 
         if (stack.length > 0) {
             internalBlocks.push({
-                text: stack
+                text: stack,
+                header: { options: { decoration: header.options.decoration }}
             })
         }
-        if (internalBlocks.length == 1 && !!internalBlocks.text) {
+        if (internalBlocks.length == 1 && !!internalBlocks[0].text) {
             return {
-                ...internalBlocks[1],
+                ...internalBlocks[0],
                 header
             }
         }
@@ -68,28 +70,28 @@ function readBlockStructure(text) {
         head += 1
     }
 
-    let levels = 0
-    function fixTrailingNewline (block) {
-        levels += 1
-        console.log(levels)
-        if (!!block.text) {
-            if (block.text.endsWith("\n")) {
-                block.text = block.text.substring(0, block.text.length-1)
-            }
-        } else if (block.children) {
-            block.children.forEach(child => fixTrailingNewline(child))
+    function recurse (block, callback) {
+        callback(null, block)
+        if (block.children) {
+            block.children.forEach(child => {
+                callback(block, child)
+                recurse(child, callback)
+            })
         }
-        levels -= 1
     }
     blocks.forEach(block => {
-        fixTrailingNewline(block)
+        recurse(block, (parent, block) => {
+            if (!!block.text && block.text.endsWith("\n")) {
+                block.text = block.text.substring(0, block.text.length-1)
+            }
+        })
     })
 
     return blocks
 }
 
 function convertToPanels(block) {
-    let { type, options } = parseHeader(block.header)
+    let { type, options } = block.header ? block.header : { type: null, options: {} }
     if (!!block.text) {
         // i dont care about desired type. text is text
         return panel.createText(block.text, options)
