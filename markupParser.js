@@ -68,6 +68,23 @@ function readBlockStructure(text) {
         head += 1
     }
 
+    let levels = 0
+    function fixTrailingNewline (block) {
+        levels += 1
+        console.log(levels)
+        if (!!block.text) {
+            if (block.text.endsWith("\n")) {
+                block.text = block.text.substring(0, block.text.length-1)
+            }
+        } else if (block.children) {
+            block.children.forEach(child => fixTrailingNewline(child))
+        }
+        levels -= 1
+    }
+    blocks.forEach(block => {
+        fixTrailingNewline(block)
+    })
+
     return blocks
 }
 
