@@ -36,7 +36,7 @@ function readBlockStructure(text) {
                 }
             }
             if (ch == "\n") {
-                if (head < text.length-2 && text[head+1] == ":" && text[head+2] == "]") {
+                if (text[head+1] == ":" && text[head+2] == "]") {
                     // block end
                     head += 3
                     break
@@ -92,7 +92,7 @@ function readBlockStructure(text) {
 
 function convertToPanels(block) {
     let { type, options } = block.header ? block.header : { type: null, options: {} }
-    if (!!block.text) {
+    if (block.text != null) {
         // i dont care about desired type. text is text
         return panel.createText(block.text, options)
     }

@@ -71,7 +71,7 @@ function convertToEvents(formatting) {
 }
 
 function placeInFile(html, title) {
-    let template = fs.readFileSync("./template.html").toString()
+    let template = fs.readFileSync("./theme/template.html").toString()
     template = template.replace("(title)", title)
     template = template.replace("(here)", html)
     if (!fs.existsSync("./output")) {
