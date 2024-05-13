@@ -1,4 +1,4 @@
-import { copyWithOffset } from '../formatting.js'
+import { copyWithOffset, getDeepCopy, getRowsFormatted } from '../formatting.js'
 
 function create() {
     let panel = {
@@ -51,11 +51,11 @@ function createText(text, options) {
     let panel = create()
     panel = {...panel, ...options}
 
-    let rows = text.split("\n")
+    let rows = getRowsFormatted(text)
     let longestTextRow = 0
     for (let i = 0; i < rows.length; i++) {
-        if (rows[i].length > longestTextRow) {
-            longestTextRow = rows[i].length
+        if (rows[i].text.length > longestTextRow) {
+            longestTextRow = rows[i].text.length
         }
     }
     let getWidth = () => {
@@ -79,23 +79,21 @@ function createText(text, options) {
                 index = i-1
             }
         }
-        let text = rows[index]
-        let lengthDifference = longestTextRow - text.length
-        let paddedText = text + " ".repeat(lengthDifference)
+        let lengthDifference = longestTextRow - rows[index].text.length
+        let paddedText = rows[index].text + " ".repeat(lengthDifference)
 
-        text = {
-            text: paddedText,
-            formatting: []
-        }
+        let row = getDeepCopy(rows[index])
+        row.text = paddedText
+        
         if (panel.decoration) {
-            text.formatting.push({
+            row.formatting.push({
                 start: 0, end: paddedText.length, type: "decoration"
             })
         }
         if (!!panel.border) {
-            text = panel.borderStuff.addBorder(text)
+            row = panel.borderStuff.addBorder(row)
         }
-        return text
+        return row
     }
 
     return { ...panel, getRow, getHeight, getWidth }

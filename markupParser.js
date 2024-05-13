@@ -1,6 +1,7 @@
 import panel from './layout/panel.js'
 import horizontal from './layout/horizontal.js'
 import vertical from './layout/vertical.js'
+import { initFormatting } from './formatting.js'
 
 function readBlockStructure(text) {
     let head = 0
@@ -72,17 +73,26 @@ function readBlockStructure(text) {
 
     function recurse (block, callback) {
         callback(null, block)
+        recurse2(block, callback)
+    }
+    function recurse2 (block, callback) {
         if (block.children) {
             block.children.forEach(child => {
                 callback(block, child)
-                recurse(child, callback)
+                recurse2(child, callback)
             })
         }
     }
+
     blocks.forEach(block => {
         recurse(block, (parent, block) => {
-            if (!!block.text && block.text.endsWith("\n")) {
-                block.text = block.text.substring(0, block.text.length-1)
+            if (block.text) {
+                if (block.text.endsWith("\n")) {
+                    block.text = block.text.substring(0, block.text.length-1)
+                }
+            }
+            if (!!block.text) {
+                block.text = initFormatting(block.text)
             }
         })
     })
