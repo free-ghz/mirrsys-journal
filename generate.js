@@ -21,6 +21,8 @@ function generateHtmlFromPanel(panel) {
             if (event.event == "start") {
                 if (event.type == "decoration") {
                     output += "<span class=\"decoration\" aria-hidden=\"true\">"
+                } else if (event.type == "link") {
+                    output += "<a href=\"" + event.original.linkTarget + "\">"
                 } else {
                     console.log("Unknown event type", event.type)
                 }
@@ -28,6 +30,8 @@ function generateHtmlFromPanel(panel) {
             if (event.event == "end") {
                 if (event.type == "decoration") {
                     output += "</span>"
+                } else if (event.type == "link") {
+                    output += "</a>"
                 } else {
                     console.log("Unknown event type", event.type)
                 }
@@ -45,12 +49,14 @@ function convertToEvents(formatting) {
         let start = {
             event: "start",
             index: format.start,
-            type: format.type
+            type: format.type,
+            original: format
         }
         let end = {
             event: "end",
             index: format.end,
-            type: format.type
+            type: format.type,
+            original: format
         }
         events.push(start, end)
     })

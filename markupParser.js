@@ -93,11 +93,35 @@ function readBlockStructure(text) {
             }
             if (!!block.text) {
                 block.text = initFormatting(block.text)
+
+                addLinks(block.text)
             }
         })
     })
 
     return blocks
+}
+
+let linkRegex = /\[(.*?)\]\((.*?)\)/g
+function addLinks(text) {
+    let rawMatches = text.text.match(linkRegex)
+    if (!rawMatches) {
+        return
+    }
+    rawMatches.forEach(rawLinkText => {
+        let borderIndex = rawLinkText.indexOf("](") // probably not so good if there's a weird url some day.
+        let linkText = rawLinkText.substring(1, borderIndex)
+        let linkTarget = rawLinkText.substring(borderIndex+2, rawLinkText.length-1)
+
+        let where = text.text.indexOf(rawLinkText)
+        text.text = text.text.substring(0, where) + linkText + text.text.substring(where + rawLinkText.length)
+        text.formatting.push({
+            start: where,
+            end: where + linkText.length,
+            type: "link",
+            linkTarget
+        })
+    })
 }
 
 function convertToPanels(block) {

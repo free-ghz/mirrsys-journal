@@ -47,8 +47,8 @@ function splitFormattedAtIndexes(text, indexes) {
     if (indexes.length == 0) {
         return [getDeepCopy(text)]
     }
-    
-    indexes.push(text.length)
+
+    indexes.push(text.text.length)
     let splits = []
     let a = 0
     for(let i = 0; i < indexes.length; i++) {
@@ -58,29 +58,30 @@ function splitFormattedAtIndexes(text, indexes) {
         let splitFormatting = []
 
         text.formatting.forEach(format => {
-            if (format.start >= a && format.end < b) {
+            if (format.start >= a && format.end <= b) {
                 // safely within row
                 splitFormatting.push({
+                    ...format,
                     start: format.start - a,
                     end: format.end - a,
                     type: format.type
                 })
-            } else if (format.start < a && format.end < b) {
+            } else if (format.start < a && format.end <= b && format.end >= a) {
                 // only got tail
                 splitFormatting.push({
+                    ...format,
                     start: 0,
                     end: format.end - a,
                     type: format.type
                 })
-            } else if (format.start >= a && format.end >= b) {
+            } else if (format.start >= a && format.end >= b && format.start <= b) {
                 // only got head
                 splitFormatting.push({
+                    ...format,
                     start: format.start - a,
                     end: b - a,
                     type: format.type
                 })
-            } else {
-                console.log("IDK!!!")
             }
         })
 
@@ -99,6 +100,7 @@ function getDeepCopy(source) {
     let formatting = []
     source.formatting.forEach(sourceFormat => {
         formatting.push({
+            ...sourceFormat,
             start: sourceFormat.start,
             end: sourceFormat.end,
             type: sourceFormat.type

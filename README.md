@@ -38,6 +38,10 @@ Encode the options as `key-value` delimited by `:`. The container type is specif
 border-false:decoration-false:vertical
 ```
 
+#### Links
+
+Supports markdown style links: `[source](target)`.
+
 #### Example
 
 ```
@@ -56,6 +60,7 @@ yea
 [:border-freetext
 this box will have a title "freetext".
 that's cool i guess.
+here's a link [to a super cool page!!!!](https://example.com/)
 :]
 ```
 
