@@ -1,5 +1,29 @@
 # mirrsys-journal
 
+### folder structure
+
+Each entry is its own folder. This folder should be placed in the `input/` folder. For it to be picked up, an `index.777` file should be present. This is the main text. (See _markup language_ section)
+
+### metadata
+
+Metadata for an entry should be placed in a `meta` file. It takes the form of key-value(s) pairs. These pairs are separated by two newlines. Keys and values are separated by a single newline. The first line in a group (that is, after two newlines) is the key, the rest are values.
+
+Example:
+
+```
+date
+2024-05-14
+
+author
+free-ghz
+
+tags
+examples
+documentation
+yadda yadda
+you can have spaces and shit
+```
+
 ### markup language
 
 Based around nesting blocks. Blocks look like this:
