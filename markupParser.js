@@ -4,73 +4,74 @@ import vertical from './layout/vertical.js'
 import { initFormatting } from './formatting.js'
 
 function readBlockStructure(text) {
-    let head = 0
-    let blocks = []
-
-    function readBlockHeader() {
-        let blockHeaderEndIndex = text.indexOf("\n", head)
-        let blockHeader = text.substring(head, blockHeaderEndIndex)
-        head = blockHeaderEndIndex + 1
-        return blockHeader
-    }
-    function readBlock() {
-        let internalBlocks = []
-        let stack = ""
-        let header = parseHeader(readBlockHeader())
-        while (head < text.length) {
-
-            let ch = text[head]
-
-            if (ch == "[") {
-                if (head < text.length-1 && text[head+1] == ":") {
-                    // nested block start!
-                    if (stack.length > 0) {
-                        internalBlocks.push({
-                            text: stack,
-                            header: { options: { decoration: header.options.decoration }}
-                        })
-                        stack = ""
+    let lines = text.split("\n")
+    let stack = []
+    let completeBlocks = []
+    let currentBlock = null
+    lines.forEach(line => {
+        if (line.startsWith("[:")) {
+            if (stack.length > 0) {
+                let textBlock = {
+                    parent: currentBlock,
+                    text: initFormatting(stack.join("\n"))
+                }
+                if (currentBlock) {
+                    textBlock.header = { options: { decoration: currentBlock.header.options.decoration }}
+                    if (currentBlock.children) {
+                        currentBlock.children.push(textBlock)
+                    } else {
+                        currentBlock.children = [textBlock]
                     }
-                    let block = readBlock()
-                    internalBlocks.push(block)
-                    continue
                 }
+                stack = []
             }
-            if (ch == "\n") {
-                if (text[head+1] == ":" && text[head+2] == "]") {
-                    // block end
-                    head += 3
-                    break
-                }
-            }
-            stack += ch
-            head++
-        }
 
-        if (stack.length > 0) {
-            internalBlocks.push({
-                text: stack,
-                header: { options: { decoration: header.options.decoration }}
-            })
-        }
-        if (internalBlocks.length == 1 && !!internalBlocks[0].text) {
-            return {
-                ...internalBlocks[0],
+            let header = parseHeader(line.substring(2))
+            let newBlock = {
+                parent: currentBlock,
                 header
             }
-        }
-        return {
-            children: internalBlocks,
-            header
-        }
-    }
-    head = text.indexOf("[:", head)
-    while(head < text.length) {
-        let block = readBlock()
-        blocks.push(block)
-        head += 1
-    }
+            if (currentBlock) {
+                if (currentBlock.children) {
+                    currentBlock.children.push(newBlock)
+                } else {
+                    currentBlock.children = [newBlock]
+                }
+            }
+            currentBlock = newBlock
 
+        } else if (line.startsWith(":]")) {
+            if (stack.length > 0) {
+                let textBlock = {
+                    parent: currentBlock,
+                    text: initFormatting(stack.join("\n"))
+                }
+                if (currentBlock) {
+                    textBlock.header = { options: { decoration: currentBlock.header.options.decoration }}
+                    if (currentBlock.children) {
+                        currentBlock.children.push(textBlock)
+                    } else {
+                        currentBlock.children = [textBlock]
+                    }
+                }
+                stack = []
+            }
+            if (currentBlock.parent == null) {
+                completeBlocks.push(currentBlock)
+            }
+            currentBlock = currentBlock.parent
+        } else {
+            if (currentBlock != null) {
+                stack.push(line)
+            }
+        }
+    })
+
+    addFormatting(completeBlocks)
+    return completeBlocks
+}
+
+function addFormatting(blocks) {
     function recurse (block, callback) {
         callback(null, block)
         recurse2(block, callback)
@@ -86,20 +87,11 @@ function readBlockStructure(text) {
 
     blocks.forEach(block => {
         recurse(block, (parent, block) => {
-            if (block.text) {
-                if (block.text.endsWith("\n")) {
-                    block.text = block.text.substring(0, block.text.length-1)
-                }
-            }
             if (!!block.text) {
-                block.text = initFormatting(block.text)
-
                 addLinks(block.text)
             }
         })
     })
-
-    return blocks
 }
 
 let linkRegex = /\[(.*?)\]\((.*?)\)/g
@@ -147,11 +139,10 @@ function parseHeader(header) {
     let options = {}
     if (header == undefined) return { options }
     let type
-    let workHeader = header.substring(2)
-    if (workHeader.length == 0) {
+    if (header.length == 0) {
         return { options }
     }
-    workHeader.split(":").forEach(instruction => {
+    header.split(":").forEach(instruction => {
         let separator = instruction.indexOf("-")
         if (separator > 0) {
             let saliva = instruction.split("-")

@@ -20,16 +20,6 @@ function initFormatting(text) {
 }
 
 function getRowsFormatted(text) {
-    if (!text.text && text.length == 0) {
-        // weird bug. i dont wanna deal right now.
-        // why do we have "uninitialized" empty strings???
-        console.log("weirdbug")
-        return {
-            text,
-            formatting: []
-        }
-    }
-    
     let index = 0
     let newlines = []
     while (index < text.text.length) {
