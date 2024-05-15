@@ -111,4 +111,18 @@ function prepareFolder(outputFolder) {
     }
 }
 
-export { generateHtmlFromPanel, placeInFile }
+function generateIndex(indexHtml) {
+    // first create a bogus "page"
+    let page = {
+        meta: {
+            title: "blog....",
+            wallpaper: "wallpaper.jpg" // same folder! default is up one
+        },
+        otherFiles: [],
+        folder: "." // sketchyyyy lol
+    }
+    fs.copyFile("./theme/wallpaper.jpg", outputRoot + "/wallpaper.jpg")
+    placeInFile(indexHtml, page)
+}
+
+export { generateHtmlFromPanel, placeInFile, generateIndex }

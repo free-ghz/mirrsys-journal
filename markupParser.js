@@ -170,4 +170,4 @@ function parse(text) {
     return convertToPanels(blocks[0])
 }
 
-export { parse }
+export { parse, addLinks }

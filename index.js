@@ -1,6 +1,6 @@
 import { read } from "./discovery.js"
-import { generateBlogPage } from "./composer.js"
-import { placeInFile } from "./generate.js"
+import { generateBlogPage, generateIndexPage } from "./composer.js"
+import { placeInFile, generateIndex } from "./generate.js"
 
 async function main() {
     let files = await read()
@@ -9,6 +9,9 @@ async function main() {
         let html = generateBlogPage(page)
         placeInFile(html, page)
     })
+
+    let indexHtml = generateIndexPage(files)
+    generateIndex(indexHtml)
 }
 
 main()
