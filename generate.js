@@ -76,14 +76,33 @@ function convertToEvents(formatting) {
     return events
 }
 
-function placeInFile(html, title) {
-    let template = fs.readFileSync("./theme/template.html").toString()
-    template = template.replace("(title)", title)
+const masterTemplate = fs.readFileSync("./theme/template.html").toString()
+const outputRoot = "./output"
+function placeInFile(html, page) {
+    let title = page.meta.title || "untitled"
+    let template = masterTemplate.replace("(title)", title)
     template = template.replace("(here)", html)
-    if (!fs.existsSync("./output")) {
-        fs.mkdirSync("./output")
+    
+    let outputFolder = outputRoot + "/" + page.folder
+    prepareFolder(outputFolder)
+
+    page.otherFiles.forEach(otherFile => {
+        let from = "./input/" + page.folder + "/" + otherFile
+        let to = outputFolder + "/" + otherFile
+        fs.copyFile(from, to)
+        console.log("- copied", otherFile)
+    })
+    fs.writeFileSync(outputFolder + "/index.html", template)
+    console.log("- wrote", outputFolder + "/index.html")
+}
+
+function prepareFolder(outputFolder) {
+    if (!fs.existsSync(outputRoot)) {
+        fs.mkdirSync(outputRoot)
     }
-    fs.writeFileSync("./output/index.html", template)
+    if (!fs.existsSync(outputFolder)) {
+        fs.mkdirSync(outputFolder)
+    }
 }
 
 export { generateHtmlFromPanel, placeInFile }
