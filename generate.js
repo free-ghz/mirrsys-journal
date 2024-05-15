@@ -82,6 +82,12 @@ function placeInFile(html, page) {
     let title = page.meta.title || "untitled"
     let template = masterTemplate.replace("(title)", title)
     template = template.replace("(here)", html)
+
+    let wallpaperUrl = "../wallpaper.jpg"
+    if (page.meta.wallpaper) {
+        wallpaperUrl = page.meta.wallpaper
+    }
+    template = template.replace("(wallpaper)", wallpaperUrl)
     
     let outputFolder = outputRoot + "/" + page.folder
     prepareFolder(outputFolder)

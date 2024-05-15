@@ -12,6 +12,16 @@
             pre {
                 display: table;
                 margin:10px auto;
+                position: relative;
+                z-index: 100;
+            }
+            .blood {
+                position:fixed;
+                top:0;
+                left:0;
+                height:100vh;
+                width:100vw;
+                z-index: -100;
             }
             .decoration {
                 color: #3aa29b;
@@ -27,5 +37,6 @@
     </head>
     <body>
 <pre>(here)</pre>
+    <img class="blood" src="(wallpaper)" />
     </body>
 </html>
