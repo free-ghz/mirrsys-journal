@@ -2,9 +2,9 @@ function copyWithOffset(formatting, offset) {
     let newFormatting = []
     formatting.forEach(format => {
         let newFormat = {
+            ...format,
             start: format.start + offset,
-            end: format.end + offset,
-            type: format.type
+            end: format.end + offset
         }
         newFormatting.push(newFormat)
     })

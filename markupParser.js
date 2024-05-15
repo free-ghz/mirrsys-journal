@@ -89,6 +89,7 @@ function addFormatting(blocks) {
         recurse(block, (parent, block) => {
             if (!!block.text) {
                 addLinks(block.text)
+                addImages(block.text)
             }
         })
     })
@@ -112,6 +113,29 @@ function addLinks(text) {
             end: where + linkText.length,
             type: "link",
             linkTarget
+        })
+    })
+}
+
+
+let imageRegex = /@image\((.*?)\)/g
+function addImages(text) {
+    let rawMatches = text.text.match(imageRegex)
+    if (!rawMatches) {
+        return
+    }
+    rawMatches.forEach(rawImageText => {
+        let hrefIndex = 7
+        let target = rawImageText.substring(hrefIndex, rawImageText.length-1)
+
+        let linkText = "(image)"
+        let where = text.text.indexOf(rawImageText)
+        text.text = text.text.substring(0, where) + linkText + text.text.substring(where + rawImageText.length)
+        text.formatting.push({
+            start: where,
+            end: where + linkText.length,
+            type: "image",
+            imageTarget: target
         })
     })
 }

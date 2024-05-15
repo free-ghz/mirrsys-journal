@@ -38,5 +38,18 @@
     <body>
 <pre>(here)</pre>
     <img class="blood" src="(wallpaper)" />
+    <script>
+        let b = document.querySelector(".blood")
+        let originalWallpaper = b.src
+        let imagelinks = document.querySelectorAll(".image")
+        imagelinks.forEach(imageLink => {
+            imageLink.addEventListener('mouseover', (e) => {
+                b.src = e.target.href
+            })
+            imageLink.addEventListener('mouseleave', (e) => {
+                b.src = originalWallpaper
+            })
+        })
+    </script>
     </body>
 </html>

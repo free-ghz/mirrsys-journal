@@ -23,6 +23,8 @@ function generateHtmlFromPanel(panel) {
                     output += "<span class=\"decoration\" aria-hidden=\"true\">"
                 } else if (event.type == "link") {
                     output += "<a href=\"" + event.original.linkTarget + "\">"
+                } else if (event.type == "image") {
+                    output += "<a class=\"image\" href=\"" + event.original.imageTarget + "\">"
                 } else {
                     console.log("Unknown event type", event.type)
                 }
@@ -31,6 +33,8 @@ function generateHtmlFromPanel(panel) {
                 if (event.type == "decoration") {
                     output += "</span>"
                 } else if (event.type == "link") {
+                    output += "</a>"
+                } else if (event.type == "image") {
                     output += "</a>"
                 } else {
                     console.log("Unknown event type", event.type)
